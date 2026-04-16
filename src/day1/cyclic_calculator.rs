@@ -1,6 +1,32 @@
+#[derive(Debug)]
+enum Directs {
+    Left,
+    Right,
+}
+
+pub struct Task {
+    dir: Directs,
+    count: u16,
+}
+
+impl Task {
+    pub fn task_from_string(line: String) -> Task {
+        let dir = match line.chars().nth(0) {
+            Some('L') => Directs::Left,
+            Some('R') => Directs::Right,
+            Some(_) => panic!("Uncorrect task1"),
+            None => panic!("Cant parse task1"),
+        };
+        let steps: u16 = line[1..].parse().expect("Can't parse number");
+        println!("dir: {:?}, steps: {}", dir, steps);
+        Task { dir, count: steps }
+    }
+}
+
 pub struct CyclicCalculator {
     pos: u16,
     reg: u16,
+    nuls_count: u16,
 }
 
 impl CyclicCalculator {
@@ -11,29 +37,49 @@ impl CyclicCalculator {
         CyclicCalculator {
             pos: initial_pos,
             reg: regularity,
+            nuls_count: 0,
         }
     }
 
-    pub fn add(&mut self, steps: u16) -> u16 {
-        let mut res: u16 = self.pos + steps;
-        if res > self.reg {
+    pub fn complete_task(&mut self, task: Task) {
+        match task.dir {
+            Directs::Left => self.pos = self.reduce(task.count),
+            Directs::Right => self.pos = self.add(task.count),
+        }
+        self.check_nul();
+    }
+
+    pub fn get_pos(&self) -> u16 {
+        self.pos
+    }
+
+    pub fn get_nuls_count(self) -> u16 {
+        self.nuls_count
+    }
+
+    fn add(&mut self, steps: u16) -> u16 {
+        let mut res: u16 = self.pos + steps % self.reg;
+        if res >= self.reg {
             res = res - self.reg;
         }
         self.pos = res;
         res
     }
 
-    pub fn reduce(&mut self, steps: u16) -> u16 {
+    fn reduce(&mut self, steps: u16) -> u16 {
         let res = if self.pos < steps {
-            self.pos + self.reg - steps
+            self.pos + self.reg - steps % self.reg
         } else {
-            self.pos - steps
+            self.pos - steps % self.reg
         };
         self.pos = res;
         res
     }
-    pub fn get_pos(&self) -> u16 {
-        self.pos
+
+    fn check_nul(&mut self) {
+        if self.pos == 0 {
+            self.nuls_count += 1;
+        }
     }
 }
 
