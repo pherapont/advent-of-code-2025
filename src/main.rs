@@ -8,7 +8,7 @@ use crate::day1::cyclic_calculator::{CyclicCalculator, Task};
 pub mod day1;
 
 fn main() {
-    run("src/day1/input_test_1.txt");
+    run("src/day1/input.txt");
 }
 
 fn run(path: &str) {
@@ -20,7 +20,11 @@ fn run(path: &str) {
             Ok(line) => {
                 let task = Task::task_from_string(line);
                 calc.complete_task(task);
-                println!("Current position: {}", calc.get_pos());
+                println!(
+                    "Current position: {}, nuls count {}",
+                    calc.get_pos(),
+                    calc.get_nuls_count()
+                );
             }
             Err(_) => {
                 panic!("Can't read line");

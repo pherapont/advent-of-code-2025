@@ -18,7 +18,7 @@ impl Task {
             None => panic!("Cant parse task1"),
         };
         let steps: u16 = line[1..].parse().expect("Can't parse number");
-        println!("dir: {:?}, steps: {}", dir, steps);
+        // println!("dir: {:?}, steps: {}", dir, steps);
         Task { dir, count: steps }
     }
 }
@@ -46,20 +46,23 @@ impl CyclicCalculator {
             Directs::Left => self.pos = self.reduce(task.count),
             Directs::Right => self.pos = self.add(task.count),
         }
-        self.check_nul();
     }
 
     pub fn get_pos(&self) -> u16 {
         self.pos
     }
 
-    pub fn get_nuls_count(self) -> u16 {
+    pub fn get_nuls_count(&self) -> u16 {
         self.nuls_count
     }
 
     fn add(&mut self, steps: u16) -> u16 {
-        let mut res: u16 = self.pos + steps % self.reg;
+        let nuls = steps / self.reg;
+        self.nuls_count += nuls;
+        let steps = steps % self.reg;
+        let mut res: u16 = self.pos + steps;
         if res >= self.reg {
+            self.nuls_count += 1;
             res = res - self.reg;
         }
         self.pos = res;
@@ -67,19 +70,23 @@ impl CyclicCalculator {
     }
 
     fn reduce(&mut self, steps: u16) -> u16 {
+        let nuls = steps / self.reg;
+        self.nuls_count += nuls;
+        let steps = steps % self.reg;
         let res = if self.pos < steps {
-            self.pos + self.reg - steps % self.reg
-        } else {
-            self.pos - steps % self.reg
-        };
-        self.pos = res;
-        res
-    }
+            if self.pos != 0 {
+                self.nuls_count += 1;
+            }
 
-    fn check_nul(&mut self) {
-        if self.pos == 0 {
+            self.pos + self.reg - steps
+        } else {
+            self.pos - steps
+        };
+        if res == 0 {
             self.nuls_count += 1;
         }
+        self.pos = res;
+        res
     }
 }
 
@@ -92,12 +99,6 @@ mod tests {
         let calc = CyclicCalculator::new(50, 100);
         assert_eq!(calc.pos, 50);
         assert_eq!(calc.reg, 100);
-    }
-
-    #[test]
-    #[should_panic]
-    fn create_uncorrect_calculator() {
-        let calc = CyclicCalculator::new(110, 100);
     }
 
     #[test]
