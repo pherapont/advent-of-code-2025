@@ -6,6 +6,7 @@ pub fn run_tools(file_path: &str) -> u64 {
     let invalid_ids = search_invalid_ids(intervals);
     let mut res: u64 = 0;
     for num in invalid_ids {
+        println!("{num}");
         res += num;
     }
     res
@@ -36,7 +37,7 @@ fn search_invalid_ids(data: Vec<(u64, u64)>) -> Vec<u64> {
         let start = record.0;
         let end = record.1;
         for number in start..=end {
-            if search_double_string(number.to_string()) {
+            if search_multi_string(number.to_string()) {
                 res.push(number);
             }
         }
@@ -51,6 +52,22 @@ fn search_double_string(line: String) -> bool {
     head == tail
 }
 
+fn search_multi_string(line: String) -> bool {
+    let max_chank = line.len() / 2;
+    let mut res = false;
+    for i in 1..=max_chank {
+        if line.len() % i != 0 {
+            continue;
+        }
+        let chank = &line[0..i];
+        let word = chank.repeat(line.len() / i);
+        if word == line {
+            res = true;
+        }
+    }
+    res
+}
+
 #[cfg(test)]
 mod tests {
     use std::vec;
@@ -60,7 +77,7 @@ mod tests {
     #[test]
     fn get_intervals_from_file() {
         let data = get_intervals("src/day2/test_input.txt");
-        let result = "11-22,5-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862".to_string();
+        let result = "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862";
         assert_eq!(data.trim(), result);
     }
 
@@ -79,6 +96,36 @@ mod tests {
     #[test]
     fn not_double_string() {
         assert!(!search_double_string("abcdefgh".to_string()));
+    }
+
+    #[test]
+    fn repeated_string_1() {
+        assert!(search_multi_string("aaaaaa".to_string()));
+    }
+
+    #[test]
+    fn repeated_string_2() {
+        assert!(search_multi_string("ababab".to_string()));
+    }
+
+    #[test]
+    fn repeated_string_3() {
+        assert!(search_multi_string("abcabc".to_string()));
+    }
+
+    #[test]
+    fn repeated_string_4() {
+        assert!(search_multi_string("aaaaa".to_string()));
+    }
+
+    #[test]
+    fn not_repeated_string_1() {
+        assert!(!search_multi_string("ababa".to_string()));
+    }
+
+    #[test]
+    fn not_repeated_string_2() {
+        assert!(!search_multi_string("abcabd".to_string()));
     }
 
     #[test]
