@@ -7,13 +7,16 @@ use std::path::Path;
 
 fn main() -> io::Result<()> {
     let path = Path::new("test_input.txt");
-    let file = File::open(&path);
-    let reader = BufReader::new(file);
+    let f = File::open(&path);
+    let reader = BufReader::new(f);
+    let mut buf = String::new();
 
-    for line in reader.lines(){
-        let line = line?;
-        println!("{}", line);
+    while reader.read_line(&mut buf)? > 0 {
+       print!("{}", buf);
+       buf.clear();
     }
+
+    println!("Hello");
 
     Ok(())
 }
