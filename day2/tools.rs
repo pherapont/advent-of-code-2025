@@ -22,7 +22,7 @@ fn parse_intervals(content: String) -> Vec<(u64, u64)> {
     for interval in content.trim().split(",") {
         let bounds_str: Vec<&str> = interval.split("-").collect();
         let mut bounds: Vec<u64> = Vec::new();
-        for bound in bounds_str {
+        for bound in bounds_str  
             let bound: u64 = bound.parse().expect("Wrong input data.");
             bounds.push(bound);
         }
