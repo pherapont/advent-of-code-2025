@@ -8,16 +8,16 @@ use std::path::Path;
 fn main() -> io::Result<()> {
     let path = Path::new("src/test_input.txt");
     let f = File::open(&path)?;
-    let mut reader = BufReader::new(f);
-    let mut buf = String::new();
-
-//    while reader.read_line(&mut buf)? > 0 {
-//       print!("{}", buf);
-//       buf.clear();
-//    }
+    let reader = BufReader::new(f);
 
     for line in reader.lines(){
-        println!("{:?}", line);
+        let content = line.expect("Can't read line");
+        println!("{:?}", content);
+        for &byte in content.as_bytes(){
+            let digit = byte - b'0';
+            print!("{}--", digit);
+        }
+            println!("");
     }
 
     Ok(())
