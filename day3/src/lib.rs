@@ -27,7 +27,7 @@ pub fn get_max_voltage(battary: &Vec<u32>) -> u64 {
     let mut ilast: usize = battary.len() - VOLT_LEN;
     let mut voltage_map: Vec<u32> = vec![0; 12];
     let mut res: u64 = 0;
-    let base: u32 = 10;
+    let base: u64 = 10;
 
     for volt in 0..VOLT_LEN {
         // TODO Сразу вылетаем с переполнением.
@@ -42,7 +42,7 @@ pub fn get_max_voltage(battary: &Vec<u32>) -> u64 {
         ifirst = max_cell.pos;
         ilast += 1;
         voltage_map[volt] = max_cell.v;
-        res += (max_cell.v * base.pow((12 - volt) as u32)) as u64;
+        res += max_cell.v as u64 * base.pow((12 - volt) as u32);
     }
 
     println!("{:?}", voltage_map);
