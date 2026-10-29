@@ -30,8 +30,6 @@ pub fn get_max_voltage(battary: &Vec<u32>) -> u64 {
     let base: u64 = 10;
 
     for volt in 0..VOLT_LEN {
-        // TODO Сразу вылетаем с переполнением.
-        // надо запускать дебаггер и смотреть значения переменных
         let mut max_cell = CELL { pos: 0, v: 0 };
         for (index, cell) in battary[ifirst..ilast].iter().enumerate() {
             if cell >= &max_cell.v {
