@@ -1,4 +1,8 @@
 const VOLT_LEN: usize = 12;
+struct CELL {
+    v: u32,
+    pos: usize,
+}
 
 pub fn get_voltage(battary: &Vec<u32>) -> u32 {
     let mut first: u32 = 0;
@@ -18,19 +22,32 @@ pub fn get_voltage(battary: &Vec<u32>) -> u32 {
 // Идея: первую цифра должна быть в срезе 0..l.len()-12
 // это должна быть самая большая цифра и самая ранняя - чтобы оставить больше возможностей следующим.
 // 2. Вторую ищем в срезе i1..l.len()-11, по томуже принципу, что и первую.
-pub fn get_max_voltage(battary: &Vec<u32>) -> u32 {
+pub fn get_max_voltage(battary: &Vec<u32>) -> u64 {
     let mut ifirst: usize = 0;
-    let mut ilast: usize = battary.len() - 1;
-    let mut voltage_map: Vec<u8> = vec![0; 12];
+    let mut ilast: usize = battary.len() - VOLT_LEN;
+    let mut voltage_map: Vec<u32> = vec![0; 12];
+    let mut res: u64 = 0;
+    let base: u32 = 10;
 
     for volt in 0..VOLT_LEN {
-        // TODO Заменить на поиск реального значения
-        voltage_map[volt] = 8;
+        // TODO Сразу вылетаем с переполнением.
+        // надо запускать дебаггер и смотреть значения переменных
+        let mut max_cell = CELL { pos: 0, v: 0 };
+        for (index, cell) in battary[ifirst..ilast].iter().enumerate() {
+            if cell >= &max_cell.v {
+                max_cell.v = *cell;
+                max_cell.pos = index + ifirst;
+            }
+        }
+        ifirst = max_cell.pos;
+        ilast += 1;
+        voltage_map[volt] = max_cell.v;
+        res += (max_cell.v * base.pow((12 - volt) as u32)) as u64;
     }
 
     println!("{:?}", voltage_map);
 
-    42
+    res
 }
 
 #[cfg(test)]
