@@ -24,7 +24,7 @@ pub fn get_voltage(battary: &Vec<u32>) -> u32 {
 // 2. Вторую ищем в срезе i1..l.len()-11, по томуже принципу, что и первую.
 pub fn get_max_voltage(battary: &Vec<u32>) -> u64 {
     let mut ifirst: usize = 0;
-    let mut ilast: usize = battary.len() - VOLT_LEN;
+    let mut ilast: usize = battary.len() - VOLT_LEN + 1;
     let mut voltage_map: Vec<u32> = vec![0; 12];
     let mut res: u64 = 0;
     let base: u64 = 10;
@@ -34,13 +34,13 @@ pub fn get_max_voltage(battary: &Vec<u32>) -> u64 {
         for (index, cell) in battary[ifirst..ilast].iter().enumerate() {
             if cell >= &max_cell.v {
                 max_cell.v = *cell;
-                max_cell.pos = index + ifirst;
+                max_cell.pos = index + ifirst + 1;
             }
         }
         ifirst = max_cell.pos;
         ilast += 1;
         voltage_map[volt] = max_cell.v;
-        res += max_cell.v as u64 * base.pow((12 - volt) as u32);
+        res += max_cell.v as u64 * base.pow((12 - volt - 1) as u32);
     }
 
     println!("{:?}", voltage_map);
