@@ -32,12 +32,12 @@ pub fn get_max_voltage(battary: &Vec<u32>) -> u64 {
     for volt in 0..VOLT_LEN {
         let mut max_cell = CELL { pos: 0, v: 0 };
         for (index, cell) in battary[ifirst..ilast].iter().enumerate() {
-            if cell >= &max_cell.v {
+            if (max_cell.v == 0) || (cell > &max_cell.v) {
                 max_cell.v = *cell;
-                max_cell.pos = index + ifirst + 1;
+                max_cell.pos = index + ifirst;
             }
         }
-        ifirst = max_cell.pos;
+        ifirst = max_cell.pos + 1;
         ilast += 1;
         voltage_map[volt] = max_cell.v;
         res += max_cell.v as u64 * base.pow((12 - volt - 1) as u32);
