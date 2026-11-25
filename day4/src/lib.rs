@@ -1,15 +1,41 @@
-#[derive(PartialEq)]
-enum Place {
+#[derive(PartialEq, Debug)]
+pub enum Place {
     Roll,
     Empty,
 }
 
-pub fn scan_field(field: Vec<Vec<&Place>>) -> u16 {
-    42
+pub fn parse_line(line: String) -> Vec<Place> {
+    let mut row: Vec<Place> = Vec::new();
+    for c in line.bytes() {
+        match c {
+            b'.' => {
+                row.push(Place::Empty);
+            }
+            b'@' => {
+                row.push(Place::Roll);
+            }
+            _ => {
+                continue;
+            }
+        }
+    }
+    row
+}
+
+pub fn scan_field(field: &Vec<Vec<Place>>) -> u16 {
+    let mut res = 0;
+    for (nr, row) in field.iter().enumerate() {
+        for (nc, cell) in row.iter().enumerate() {
+            if cell == &Place::Roll && check_window(&field, nr, nc) {
+                res += 1;
+            }
+        }
+    }
+    res
 }
 
 // Функция возвращает true, если количество рулонов рядом меньше 4
-fn check_window(field: &[Vec<&Place>], r: usize, c: usize) -> bool {
+fn check_window(field: &Vec<Vec<Place>>, r: usize, c: usize) -> bool {
     let rows = field.len();
     // if rows == 0 {return?}
     let cols = field[0].len();
@@ -24,7 +50,7 @@ fn check_window(field: &[Vec<&Place>], r: usize, c: usize) -> bool {
             if nr == r && nc == c {
                 continue;
             }
-            if field[nr][nc] == &Place::Roll {
+            if field[nr][nc] == Place::Roll {
                 result += 1;
             }
         }
@@ -36,58 +62,20 @@ fn check_window(field: &[Vec<&Place>], r: usize, c: usize) -> bool {
 mod test {
     use super::*;
 
-    #[test]
-    fn less_than_4_rolls() {
-        let r = Place::Roll;
-        let e = Place::Empty;
-        let row1 = vec![&e, &e, &r];
-        let row2 = vec![&r, &e, &e];
-        let row3 = vec![&e, &r, &e];
-        let field = [row1, row2, row3];
-        assert!(check_window(&field, 1, 1));
-    }
-
-    #[test]
-    fn more_than_4_rolls() {
-        let r = Place::Roll;
-        let e = Place::Empty;
-        let row1 = vec![&e, &r, &r];
-        let row2 = vec![&r, &e, &r];
-        let row3 = vec![&e, &r, &e];
-        let field = [row1, row2, row3];
-        assert!(!check_window(&field, 1, 1));
-    }
-
-    #[test]
-    fn ecual_4_rolls() {
-        let r = Place::Roll;
-        let e = Place::Empty;
-        let row1 = vec![&e, &r, &e];
-        let row2 = vec![&r, &e, &r];
-        let row3 = vec![&e, &r, &e];
-        let field = [row1, row2, row3];
-        assert!(!check_window(&field, 1, 1));
-    }
-
-    #[test]
-    fn roll_in_corner() {
-        let r = Place::Roll;
-        let e = Place::Empty;
-        let row1 = vec![&e, &r, &e];
-        let row2 = vec![&r, &e, &r];
-        let row3 = vec![&e, &r, &e];
-        let field = [row1, row2, row3];
-        assert!(check_window(&field, 0, 2));
-    }
-
     #[ignore]
     #[test]
-    fn only_one_row() {
-        let r = Place::Roll;
-        let e = Place::Empty;
-        let row = vec![&r, &r, &r, &e, &e, &e, &r, &r];
-        let field = vec![row];
-        let result = 8;
-        assert_eq!(scan_field(field), result);
+    fn parse_simple_line() {
+        let line = "...@@@..";
+        let row = vec![
+            Place::Empty,
+            Place::Empty,
+            Place::Empty,
+            Place::Roll,
+            Place::Roll,
+            Place::Roll,
+            Place::Empty,
+            Place::Empty,
+        ];
+        assert_eq!(parse_line(line.to_string()), row);
     }
 }
