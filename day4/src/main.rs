@@ -20,7 +20,7 @@ fn main() -> io::Result<()> {
     }
     // todo field должно изменяться от итерации к итерацииЫ
     loop {
-        let tmp = scan_field(&field);
+        let (tmp, field) = scan_field(&field);
         if tmp != 0 {
             result += tmp;
         } else {

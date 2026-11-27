@@ -22,16 +22,22 @@ pub fn parse_line(line: String) -> Vec<Place> {
     row
 }
 
-pub fn scan_field(field: &Vec<Vec<Place>>) -> u16 {
+pub fn scan_field(field: &Vec<Vec<Place>>) -> (u16, Vec<Vec<Place>>) {
     let mut res = 0;
+    let mut new_field: Vec<Vec<Place>> = Vec::new();
     for (nr, row) in field.iter().enumerate() {
         for (nc, cell) in row.iter().enumerate() {
             if cell == &Place::Roll && check_window(&field, nr, nc) {
+                new_field[nr][nc] = Place::Empty;
                 res += 1;
+            } else if cell == &Place::Roll {
+                new_field[nr][nc] = Place::Roll;
+            } else {
+                new_field[nr][nc] = Place::Empty;
             }
         }
     }
-    res
+    (res, new_field)
 }
 
 // Функция возвращает true, если количество рулонов рядом меньше 4
