@@ -5,7 +5,7 @@ use std::{
 
 use day4::{Place, parse_line, scan_field};
 
-const FILE_MAP: &str = "src/test_input.txt";
+const FILE_MAP: &str = "src/input.txt";
 
 fn main() -> io::Result<()> {
     let f = File::open(FILE_MAP)?;
@@ -20,7 +20,8 @@ fn main() -> io::Result<()> {
     }
     // todo field должно изменяться от итерации к итерацииЫ
     loop {
-        let (tmp, field) = scan_field(&field);
+        let tmp: u16;
+        (tmp, field) = scan_field(&field);
         if tmp != 0 {
             result += tmp;
         } else {
